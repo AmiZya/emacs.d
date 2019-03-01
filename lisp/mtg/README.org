@@ -1,0 +1,4 @@
+#+TITLE: Mtg
+#+AUTHOR: Mathieu Marques
+
+Build decks for Magic: The Gathering.

@@ -1,0 +1,4 @@
+#+TITLE: Company-Mtg
+#+AUTHOR: Mathieu Marques
+
+Company backend for MTG cards.
