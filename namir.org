@@ -742,10 +742,14 @@ for much shorter starting times when you already got Emacs running ie. when you
 want to edit a single file for a quick edit.
 
 #+BEGIN_SRC emacs-lisp
-(use-package server
-  :ensure nil
-  :defer 1
-  :config (server-start))
+;; (use-package server
+;;   :ensure nil
+;;   :defer 1
+;;   :config (server-start))
+
+(require 'server)
+(unless (server-running-p)
+    (server-start))
 #+END_SRC
 
 ** Dictionary

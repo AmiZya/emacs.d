@@ -212,6 +212,8 @@ If FACES is not provided or nil, use `face-list' instead."
 
 (use-package toc-org :after org)
 
+(require 'org-tempo)
+
 (use-package python
   :ensure nil
   :delight python-mode "Python"
@@ -383,10 +385,14 @@ If FACES is not provided or nil, use `face-list' instead."
   :defer 1
   :config (edit-server-start))
 
-(use-package server
-  :ensure nil
-  :defer 1
-  :config (server-start))
+;; (use-package server
+;;   :ensure nil
+;;   :defer 1
+;;   :config (server-start))
+
+(require 'server)
+(unless (server-running-p)
+    (server-start))
 
 (use-package define-word)
 
