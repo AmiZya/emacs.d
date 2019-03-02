@@ -424,6 +424,12 @@ maintain a TOC at the first heading that has a =:TOC:= tag.
 (use-package toc-org :after org)
 #+END_SRC
 
+Templates in OrgMode
+
+#+begin_src emacs-lisp
+(require 'org-tempo)
+#+end_src
+
 ** Python
 
 - *TODO*: Fix for =ipython= 5.1.0.
