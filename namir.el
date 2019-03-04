@@ -1380,8 +1380,6 @@ If region was active, keep it so that the command can be repeated."
   ;; Customize faces
   (set-face-attribute 'magit-diff-file-heading-highlight nil :background nil)
   (set-face-attribute 'magit-diff-hunk-region nil :inherit 'region)
-  (set-face-attribute 'magit-popup-heading nil :height me/font-size-title)
-  (set-face-attribute 'magit-section-heading nil :height me/font-size-title)
   (set-face-attribute 'magit-section-highlight nil :background nil)
   (me/unboldify '(magit-branch-current
                   magit-branch-local
@@ -1459,8 +1457,8 @@ If region was active, keep it so that the command can be repeated."
 :config
 (setq company-idle-delay 0)
 (setq company-minimum-prefix-length 3)
-
 (global-company-mode t)
+:bind (("C-/" . company-complete))
 )
 
 (use-package company-irony
@@ -1499,6 +1497,6 @@ If region was active, keep it so that the command can be repeated."
 (add-hook 'python-mode-hook 'my/python-mode-hook)
 
 ;; company box mode
-;(use-package company-box
-;:ensure t
-;  :hook (company-mode . company-box-mode))
+(use-package company-box
+:ensure t
+  :hook (company-mode . company-box-mode))

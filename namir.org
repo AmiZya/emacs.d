@@ -52,6 +52,7 @@
   - [[#company][Company]]
 
 * Bootstrap
+
 ** Easily edit config file
 #+BEGIN_SRC emacs-lisp
   (defun find-config ()
@@ -2240,8 +2241,8 @@ Highlight space-like characters, eg. trailing spaces, tabs, empty lines.
 :config
 (setq company-idle-delay 0)
 (setq company-minimum-prefix-length 3)
-
 (global-company-mode t)
+:bind (("C-/" . company-complete))
 )
 
 (use-package company-irony
@@ -2280,7 +2281,7 @@ Highlight space-like characters, eg. trailing spaces, tabs, empty lines.
 (add-hook 'python-mode-hook 'my/python-mode-hook)
 
 ;; company box mode
-;(use-package company-box
-;:ensure t
-;  :hook (company-mode . company-box-mode)) 
+(use-package company-box
+:ensure t
+  :hook (company-mode . company-box-mode)) 
 #+end_src
