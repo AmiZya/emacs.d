@@ -52,7 +52,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)                     ; Replace yes/no prompts with y/n
 (global-subword-mode 1)                           ; Iterate through CamelCase words
 (menu-bar-mode 0)                                 ; Disable the menu bar
-(mouse-avoidance-mode 'banish)                    ; Avoid collision of mouse with point
+(mouse-avoidance-mode 'animate)                   ; Avoid collision of mouse with point
 (put 'downcase-region 'disabled nil)              ; Enable downcase-region
 (put 'upcase-region 'disabled nil)                ; Enable upcase-region
 (set-default-coding-systems 'utf-8)               ; Default to utf-8 encoding
@@ -67,11 +67,14 @@
 (defvar me/erc-password           nil        "")
 (defvar me/erc-port               nil        "6697")
 (defvar me/erc-server             nil        "chat.freenode.net")
+(if (eq system-type 'darwin)
+(defvar me/font-family		   "Space Mono for Powerline")
 (defvar me/font-family            "Source Code Pro")
-(defvar me/font-size-default      130        "150")
-(defvar me/font-size-header-line  120        "120")
-(defvar me/font-size-mode-line    110        "120")
-(defvar me/font-size-small        100        "100")
+)
+(defvar me/font-size-default      240        "200")
+(defvar me/font-size-header-line  140        "120")
+(defvar me/font-size-mode-line    120        "120")
+(defvar me/font-size-small        120        "100")
 (defvar me/font-size-title        140        "140")
 
 (let ((secret.el (expand-file-name ".secret.el" user-emacs-directory)))
@@ -89,10 +92,33 @@ If FACES is not provided or nil, use `face-list' instead."
             (set-face-attribute face nil :weight 'normal)))
         (or faces (face-list))))
 
-(use-package color-theme-sanityinc-tomorrow
-  :ensure t)
-(require 'color-theme-sanityinc-tomorrow)
-(load-theme 'sanityinc-tomorrow-blue t)
+;; (use-package color-theme-sanityinc-tomorrow
+;;   :ensure t)
+;; ;(require 'color-theme-sanityinc-tomorrow)
+;(load-theme 'sanityinc-tomorrow-blue t)
+(load-theme 'leuven t)
+;; (use-package doom-themes
+;; :ensure t
+;; :config
+;; ;; Global settings (defaults)
+;; (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+;;       doom-themes-enable-italic t) ; if nil, italics is universally disabled
+
+;; ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
+;; ;; may have their own settings.
+;; (load-theme 'doom-dracula t)
+
+;; ;; Enable flashing mode-line on errors
+;; (doom-themes-visual-bell-config)
+
+;; ;; Enable custom neotree theme (all-the-icons must be installed!)
+;; (doom-themes-neotree-config)
+;; ;; or for treemacs users
+;; (doom-themes-treemacs-config)
+
+;; ;; Corrects (and improves) org-mode's native fontification.
+;; (doom-themes-org-config)
+;; )
 
    (set-face-attribute 'default nil :font me/font-family :height me/font-size-default)
    (set-face-attribute 'fixed-pitch nil :font me/font-family)
@@ -365,7 +391,7 @@ If FACES is not provided or nil, use `face-list' instead."
 
 (use-package newcomment
   :ensure nil
-  :bind ("<M-return>" . comment-indent-new-line)
+  :bind ("<C-;>" . comment-region)
   :config
   (setq-default
    comment-auto-fill-only-comments t
@@ -866,25 +892,7 @@ If FACES is not provided or nil, use `face-list' instead."
       (workspace-number)
       (global :face 'spaceline-read-only)))
 
-  ;; Customize the mode-line
-  ;; (zenburn-with-color-variables
-  ;;   (set-face-attribute 'powerline-active2 nil :background zenburn-bg+05)
-  ;;   (set-face-attribute 'powerline-inactive2 nil :background zenburn-bg)
-  ;;   (set-face-attribute 'spaceline-flycheck-error nil :foreground zenburn-red)
-  ;;   (set-face-attribute 'spaceline-flycheck-info nil :foreground zenburn-blue+1)
-  ;;   (set-face-attribute 'spaceline-flycheck-warning nil :foreground zenburn-orange)
-  ;;   (set-face-attribute 'spaceline-highlight-face nil
-  ;;                       :background zenburn-yellow
-  ;;                       :foreground zenburn-fg-1)
-  ;;   (set-face-attribute 'spaceline-modified nil
-  ;;                       :background zenburn-red
-  ;;                       :foreground zenburn-red-4)
-  ;;   (set-face-attribute 'spaceline-read-only nil
-  ;;                       :background zenburn-blue+1
-  ;;                       :foreground zenburn-blue-5)
-  ;;   (set-face-attribute 'spaceline-unmodified nil
-  ;;                       :background zenburn-green-1
-  ;;                       :foreground zenburn-green+4))
+      (powerline-center-theme)
 )
 
 (use-package flycheck
@@ -1380,8 +1388,6 @@ If region was active, keep it so that the command can be repeated."
   ;; Customize faces
   (set-face-attribute 'magit-diff-file-heading-highlight nil :background nil)
   (set-face-attribute 'magit-diff-hunk-region nil :inherit 'region)
-  (set-face-attribute 'magit-popup-heading nil :height me/font-size-title)
-  (set-face-attribute 'magit-section-heading nil :height me/font-size-title)
   (set-face-attribute 'magit-section-highlight nil :background nil)
   (me/unboldify '(magit-branch-current
                   magit-branch-local
@@ -1502,3 +1508,10 @@ If region was active, keep it so that the command can be repeated."
 ;(use-package company-box
 ;:ensure t
 ;  :hook (company-mode . company-box-mode))
+
+(use-package exec-path-from-shell
+:ensure t
+:if (eq system-type 'darwin)
+:config
+(setq exec-path-from-shell-check-startup-files nil)
+(exec-path-from-shell-initialize))
