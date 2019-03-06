@@ -505,14 +505,49 @@ Templates in OrgMode
 #+end_src
 
 ** Latex
-#+begin_src emacs-lisp
-(use-package tex
-    :ensure auctex)
+   #+begin_src emacs-lisp
 
-    (defun tex-view ()
-        (interactive)
-        (tex-send-command "zathura" (tex-append tex-print-file ".pdf")))
-#+end_src
+(use-package auctex
+  :defer t
+  :init
+  (setq TeX-auto-save t
+        TeX-parse-self t
+        TeX-syntactic-comment t
+        TeX-PDF-mode t
+        ;; Synctex support
+        TeX-source-correlate-mode t
+        TeX-source-correlate-start-server nil
+        ;; Setup reftex style (RefTeX is supported through extension)
+        reftex-use-fonts t
+        ;; Don't insert line-break at inline math
+        LaTeX-fill-break-at-separators nil)
+  (add-hook 'LaTeX-mode-hook 'latex-math-mode)
+  (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+  ;; (add-hook 'LaTeX-mode-hook 'my/latex-mode-defaults)
+
+  :config
+  ;; (defun my/latex-mode-defaults ()
+  ;;   (visual-line-mode +1)
+     (yas-minor-mode))
+
+
+;;(use-package auctex)
+
+(use-package auctex-latexmk
+  :defer t
+  :init
+  (add-hook 'LaTeX-mode-hook 'auctex-latexmk-setup))
+
+;; (use-package cdlatex)
+
+(use-package company-auctex
+  :defer t
+  :init
+  (add-hook 'LaTeX-mode-hook 'company-auctex-init))
+
+   
+   #+end_src
+
 ** YAML
 
 #+BEGIN_SRC emacs-lisp
@@ -902,14 +937,15 @@ under the same bind, that is =<C-return>=. Basically it's an expand DWIM.
 (use-package yasnippet
   :bind
   (:map yas-minor-mode-map
-        ("TAB" . nil)
-        ("<tab>" . nil))
+        ("TAB" . yas-expand)
+        ("<tab>" . yas-expand))
   :hook
   ((emacs-lisp-mode . yas-minor-mode)
    (html-mode . yas-minor-mode)
    (js-mode . yas-minor-mode)
    (org-mode . yas-minor-mode)
-   (python-mode . yas-minor-mode))
+   (python-mode . yas-minor-mode)
+   (tex-mode . yas-minor-mode))
   :config
   (setq-default yas-snippet-dirs `(,(expand-file-name "snippets/" user-emacs-directory)))
   (yas-reload-all))
@@ -1462,6 +1498,7 @@ variables of interest, then copying them into the Emacs environment.
   :if (memq window-system '(mac ns))
   :defer 1
   :config (exec-path-from-shell-initialize))
+(setq exec-path-from-shell-check-startup-files nil)
 #+END_SRC
 
 ** Parentheses

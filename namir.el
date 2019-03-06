@@ -276,12 +276,43 @@ If FACES is not provided or nil, use `face-list' instead."
     :config 
     (elpy-enable))
 
-(use-package tex
-    :ensure auctex)
+(use-package auctex
+  :defer t
+  :init
+  (setq TeX-auto-save t
+        TeX-parse-self t
+        TeX-syntactic-comment t
+        TeX-PDF-mode t
+        ;; Synctex support
+        TeX-source-correlate-mode t
+        TeX-source-correlate-start-server nil
+        ;; Setup reftex style (RefTeX is supported through extension)
+        reftex-use-fonts t
+        ;; Don't insert line-break at inline math
+        LaTeX-fill-break-at-separators nil)
+  (add-hook 'LaTeX-mode-hook 'latex-math-mode)
+  (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+  ;; (add-hook 'LaTeX-mode-hook 'my/latex-mode-defaults)
 
-    (defun tex-view ()
-        (interactive)
-        (tex-send-command "zathura" (tex-append tex-print-file ".pdf")))
+  :config
+  ;; (defun my/latex-mode-defaults ()
+  ;;   (visual-line-mode +1)
+     (yas-minor-mode))
+
+
+;;(use-package auctex)
+
+(use-package auctex-latexmk
+  :defer t
+  :init
+  (add-hook 'LaTeX-mode-hook 'auctex-latexmk-setup))
+
+;; (use-package cdlatex)
+
+(use-package company-auctex
+  :defer t
+  :init
+  (add-hook 'LaTeX-mode-hook 'company-auctex-init))
 
 (use-package yaml-mode
   :delight yaml-mode "YAML"
@@ -508,14 +539,15 @@ If FACES is not provided or nil, use `face-list' instead."
 (use-package yasnippet
   :bind
   (:map yas-minor-mode-map
-        ("TAB" . nil)
-        ("<tab>" . nil))
+        ("TAB" . yas-expand)
+        ("<tab>" . yas-expand))
   :hook
   ((emacs-lisp-mode . yas-minor-mode)
    (html-mode . yas-minor-mode)
    (js-mode . yas-minor-mode)
    (org-mode . yas-minor-mode)
-   (python-mode . yas-minor-mode))
+   (python-mode . yas-minor-mode)
+   (tex-mode . yas-minor-mode))
   :config
   (setq-default yas-snippet-dirs `(,(expand-file-name "snippets/" user-emacs-directory)))
   (yas-reload-all))
@@ -923,6 +955,7 @@ If FACES is not provided or nil, use `face-list' instead."
   :if (memq window-system '(mac ns))
   :defer 1
   :config (exec-path-from-shell-initialize))
+(setq exec-path-from-shell-check-startup-files nil)
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode)
@@ -1508,10 +1541,3 @@ If region was active, keep it so that the command can be repeated."
 ;(use-package company-box
 ;:ensure t
 ;  :hook (company-mode . company-box-mode))
-
-(use-package exec-path-from-shell
-:ensure t
-:if (eq system-type 'darwin)
-:config
-(setq exec-path-from-shell-check-startup-files nil)
-(exec-path-from-shell-initialize))
