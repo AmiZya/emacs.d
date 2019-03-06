@@ -64,18 +64,24 @@
   (load custom-file))
 
 (defvar me/erc-nick               nil        "amizya")
-(defvar me/erc-password           nil        "")
+
 (defvar me/erc-port               nil        "6697")
 (defvar me/erc-server             nil        "chat.freenode.net")
+
 (if (eq system-type 'darwin)
-(defvar me/font-family		   "Space Mono for Powerline")
-(defvar me/font-family            "Source Code Pro")
+(setq me/font-family		   "Space Mono for Powerline"
+      me/font-size-default      240
+      me/font-size-header-line  140
+      me/font-size-mode-line    120
+      me/font-size-small        120
+      me/font-size-title        140)
+(setq me/font-family            "Hack:style=Bold"
+      me/font-size-default      130
+      me/font-size-header-line  120
+      me/font-size-mode-line    110
+      me/font-size-small        120
+      me/font-size-title        140)
 )
-(defvar me/font-size-default      240        "200")
-(defvar me/font-size-header-line  140        "120")
-(defvar me/font-size-mode-line    120        "120")
-(defvar me/font-size-small        120        "100")
-(defvar me/font-size-title        140        "140")
 
 (let ((secret.el (expand-file-name ".secret.el" user-emacs-directory)))
   (when (file-exists-p secret.el)
@@ -596,16 +602,9 @@ If FACES is not provided or nil, use `face-list' instead."
    erc-lurker-hide-list '("JOIN" "PART" "QUIT")
    erc-prompt (format "%18s" ">")
    erc-timestamp-format nil)
-  (set-face-attribute 'erc-prompt-face nil :background nil)
   ;; (zenburn-with-color-variables
   ;;   (set-face-attribute 'erc-timestamp-face nil :foreground zenburn-fg-1))
-  (me/unboldify '(erc-bold-face
-                  erc-button
-                  erc-nick-default-face
-                  erc-my-nick-face
-                  erc-my-nick-prefix-face
-                  erc-nick-prefix-face
-                  erc-prompt-face)))
+)
 
 (use-package erc-button
   :ensure nil
@@ -1498,8 +1497,8 @@ If region was active, keep it so that the command can be repeated."
 :config
 (setq company-idle-delay 0)
 (setq company-minimum-prefix-length 3)
-
 (global-company-mode t)
+:bind (("C-/" . company-complete))
 )
 
 (use-package company-irony
@@ -1538,6 +1537,7 @@ If region was active, keep it so that the command can be repeated."
 (add-hook 'python-mode-hook 'my/python-mode-hook)
 
 ;; company box mode
-;(use-package company-box
-;:ensure t
-;  :hook (company-mode . company-box-mode))
+(use-package company-box
+:ensure t
+  :hook (company-mode . company-box-mode))
+
