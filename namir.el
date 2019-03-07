@@ -246,6 +246,8 @@ If FACES is not provided or nil, use `face-list' instead."
 
 (require 'org-tempo)
 
+(setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+
 (use-package python
   :ensure nil
   :delight python-mode "Python"
