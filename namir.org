@@ -475,8 +475,6 @@ Make LaTeX previews bigger
   :defer t
   :init
   (add-hook 'LaTeX-mode-hook 'company-auctex-init))
-
-   
    #+end_src
 
 ** YAML
