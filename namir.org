@@ -5,7 +5,6 @@
 - [[#bootstrap][Bootstrap]]
   - [[#easily-edit-config-file][Easily edit config file]]
   - [[#use-better-defaults][Use better defaults]]
-  - [[#load-customel][Load =.custom.el=]]
   - [[#load-secretel][Load =.secret.el=]]
 - [[#theme][Theme]]
 - [[#languages][Languages]]
@@ -43,13 +42,14 @@
   - [[#projectile][Projectile]]
   - [[#shell-and-terminal][Shell and Terminal]]
   - [[#undo-tree][Undo Tree]]
-  - [[#treemacs][Treemacs]]
   - [[#quality-of-life][Quality of Life]]
   - [[#version-control][Version Control]]
   - [[#which-key][Which Key]]
   - [[#whitespaces][Whitespaces]]
   - [[#autocomplete][Autocomplete]]
   - [[#company][Company]]
+  - [[#dashboard][Dashboard]]
+  - [[#treemacs][Treemacs]]
 
 * Bootstrap
 
@@ -140,25 +140,6 @@ Garbage-collect on focus-out, Emacs /should/ feel snappier.
 (add-hook 'focus-out-hook #'garbage-collect)
 #+END_SRC
 
-** Load =.custom.el=
-
-One is able to use the customization interface that is bundled within Emacs. It
-is meant to help people who are not familiar with Emacs Lisp in the
-configuration of Emacs itself. By default, changes in the customization will be
-automatically detected and appended at the end of the configuration file,
-=init.el=.
-
-Since that in my case, the actual configuration file is a new one, crafted by
-=org-mode=, adding code at the end of =init.el= might mess things up. The
-following tells Emacs to add extra code in another file that would be then
-loaded, if existing.
-
-#+BEGIN_SRC emacs-lisp
-(setq-default custom-file (expand-file-name ".custom.el" user-emacs-directory))
-(when (file-exists-p custom-file)
-  (load custom-file))
-#+END_SRC
-
 ** Load =.secret.el=
 
 I load =~/.emacs.d/.secret.el= to keep sensible things out of version control.
@@ -167,12 +148,11 @@ and =user-mail-address=. This is also where you want your API tokens to live.
 
 #+BEGIN_SRC emacs-lisp
 (defvar me/erc-nick               nil        "amizya")
-
 (defvar me/erc-port               nil        "6697")
 (defvar me/erc-server             nil        "chat.freenode.net")
 
 (if (eq system-type 'darwin)
-(setq me/font-family		   "Space Mono for Powerline"
+(setq me/font-family		   "Iosevka"
       me/font-size-default      240
       me/font-size-header-line  140
       me/font-size-mode-line    120
@@ -200,108 +180,49 @@ default. I don't like it.
 (set-face-attribute 'italic nil :underline nil)
 #+END_SRC
 
-I don't like bold text, mostly because it looks like crap on Windows. Since
-faces can be defined in every packages, I need to unboldify after that specfic
-package has been loaded. That function should be called after the provided faces
-have been defined.
-
-#+BEGIN_SRC emacs-lisp
-(defun me/unboldify (&optional faces)
-  "Set the weight property of FACES to `normal'.
-If FACES is not provided or nil, use `face-list' instead."
-  (interactive)
-  (mapc (lambda (face)
-          (when (eq (face-attribute face :weight) 'bold)
-            (set-face-attribute face nil :weight 'normal)))
-        (or faces (face-list))))
-#+END_SRC
-
-# Load =zenburn-theme= and fix some high-level faces to match my personal
-# preferences.
-
-# #+BEGIN_SRC emacs-lisp
-# (use-package zenburn-theme
-#   :demand t
-#   :config
-#   ;(load-theme 'zenburn t)
-#   (set-face-attribute 'default nil :font me/font-family :height me/font-size-default)
-#   (set-face-attribute 'fixed-pitch nil :font me/font-family)
-#   (set-face-attribute 'font-lock-comment-face nil :italic t)
-#   (set-face-attribute 'font-lock-doc-face nil :italic t)
-#   (zenburn-with-color-variables
-#     (set-face-attribute 'button nil :foreground zenburn-yellow-2)
-#     (set-face-attribute 'help-argument-name nil :foreground zenburn-orange :italic nil)
-#     (set-face-attribute 'highlight nil :background zenburn-yellow :foreground zenburn-fg-1)
-#     (set-face-attribute 'header-line nil
-#                         :box `(:line-width 1 :color ,zenburn-bg-1)
-#                         :height me/font-size-header-line)
-#     (set-face-attribute 'mode-line nil
-#                         :box `(:line-width 1 :color ,zenburn-bg-1)
-#                         :foreground zenburn-bg+3
-#                         :height me/font-size-mode-line)
-#     (set-face-attribute 'mode-line-inactive nil
-#                         :box `(:line-width 1 :color ,zenburn-bg-05)
-#                         :foreground zenburn-bg+3
-#                         :height me/font-size-mode-line)
-#     (set-face-attribute 'region nil
-#                         :background zenburn-fg-1
-#                         :distant-foreground 'unspecified)
-#     (set-face-attribute 'vertical-border nil :foreground zenburn-bg))
-#   (me/unboldify '(bold
-#                   error
-#                   font-lock-builtin-face
-#                   font-lock-keyword-face
-#                   font-lock-negation-char-face
-#                   font-lock-regexp-grouping-backslash
-#                   font-lock-regexp-grouping-construct
-#                   font-lock-warning-face
-#                   link
-#                   mode-line-buffer-id
-#                   success
-#                   warning)))
-# #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
 ;; (use-package color-theme-sanityinc-tomorrow
 ;;   :ensure t)
 ;; ;(require 'color-theme-sanityinc-tomorrow)
 ;(load-theme 'sanityinc-tomorrow-blue t)
-(load-theme 'leuven t)
-;; (use-package doom-themes
-;; :ensure t
-;; :config
-;; ;; Global settings (defaults)
-;; (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-;;       doom-themes-enable-italic t) ; if nil, italics is universally disabled
-
-;; ;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
-;; ;; may have their own settings.
-;; (load-theme 'doom-dracula t)
-
-;; ;; Enable flashing mode-line on errors
-;; (doom-themes-visual-bell-config)
-
-;; ;; Enable custom neotree theme (all-the-icons must be installed!)
-;; (doom-themes-neotree-config)
-;; ;; or for treemacs users
-;; (doom-themes-treemacs-config)
-
-;; ;; Corrects (and improves) org-mode's native fontification.
-;; (doom-themes-org-config)
-;; )
+;(load-theme 'leuven t)
 
    (set-face-attribute 'default nil :font me/font-family :height me/font-size-default)
    (set-face-attribute 'fixed-pitch nil :font me/font-family)
 
-   (set-face-attribute 'mode-line nil
-                       :height me/font-size-mode-line)
-   (set-face-attribute 'mode-line-inactive nil
-                                  :height me/font-size-mode-line)
+   ;; (set-face-attribute 'mode-line nil
+   ;;                     :height me/font-size-mode-line)
+   ;; (set-face-attribute 'mode-line-inactive nil
+   ;;                                :height me/font-size-mode-line)
 
 
 #+END_SRC
 
+Doom Themes for Emacs
+#+begin_src emacs-lisp
+(use-package doom-themes
+:ensure t)
 
+(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+      doom-themes-enable-italic t) ; if nil, italics is universally disabled
+
+;; Load the theme (doom-one, doom-molokai, etc); keep in mind that each theme
+;; may have their own settings.
+(load-theme 'doom-dracula t)
+
+;; Enable flashing mode-line on errors
+(doom-themes-visual-bell-config)
+
+;; Enable custom neotree theme (all-the-icons must be installed!)
+(doom-themes-neotree-config)
+;; or for treemacs users
+(doom-themes-treemacs-config)
+
+;; Corrects (and improves) org-mode's native fontification.
+(doom-themes-org-config)
+
+#+end_src
 
 #+BEGIN_SRC emacs-lisp
 (use-package mdi
@@ -372,8 +293,7 @@ HTML mode is defined in =sgml-mode.el=.
   (setq-default
    markdown-asymmetric-header t
    markdown-split-window-direction 'right)
-  (me/unboldify '(markdown-header-face))
-  (set-face-attribute 'markdown-table-face nil :height me/font-size-small))
+    (set-face-attribute 'markdown-table-face nil :height me/font-size-small))
 #+END_SRC
 
 ** Org
@@ -428,7 +348,7 @@ authoring documents with a fast and effective plain-text system.
   ;; (zenburn-with-color-variables
   ;;   (set-face-attribute 'org-block nil :background zenburn-bg+05)
   ;;   (set-face-attribute 'org-list-dt nil :foreground zenburn-yellow))
-  (me/unboldify '(org-document-title org-list-dt org-tag org-todo)))
+  )
 
 (use-package org-src
   :ensure nil
@@ -516,14 +436,47 @@ Make LaTeX previews bigger
 #+end_src
 
 ** Latex
-#+begin_src emacs-lisp
-(use-package tex
-    :ensure auctex)
+   #+begin_src emacs-lisp
 
-    (defun tex-view ()
-        (interactive)
-        (tex-send-command "zathura" (tex-append tex-print-file ".pdf")))
-#+end_src
+(use-package auctex
+  :defer t
+  :init
+  (setq TeX-auto-save t
+        TeX-parse-self t
+        TeX-syntactic-comment t
+        TeX-PDF-mode t
+        ;; Synctex support
+        TeX-source-correlate-mode t
+        TeX-source-correlate-start-server nil
+        ;; Setup reftex style (RefTeX is supported through extension)
+        reftex-use-fonts t
+        ;; Don't insert line-break at inline math
+        LaTeX-fill-break-at-separators nil)
+  (add-hook 'LaTeX-mode-hook 'latex-math-mode)
+  (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+  ;; (add-hook 'LaTeX-mode-hook 'my/latex-mode-defaults)
+
+  :config
+  ;; (defun my/latex-mode-defaults ()
+  ;;   (visual-line-mode +1)
+     (yas-minor-mode))
+
+
+;;(use-package auctex)
+
+(use-package auctex-latexmk
+  :defer t
+  :init
+  (add-hook 'LaTeX-mode-hook 'auctex-latexmk-setup))
+
+;; (use-package cdlatex)
+
+(use-package company-auctex
+  :defer t
+  :init
+  (add-hook 'LaTeX-mode-hook 'company-auctex-init))
+   #+end_src
+
 ** YAML
 
 #+BEGIN_SRC emacs-lisp
@@ -533,7 +486,6 @@ Make LaTeX previews bigger
 #+END_SRC
 
 * Features
-
 ** Ace Windows
 
 #+BEGIN_SRC emacs-lisp
@@ -760,7 +712,7 @@ little more.
                       :height me/font-size-title)
   ;; (zenburn-with-color-variables
   ;;   (set-face-attribute 'custom-state nil :foreground zenburn-green+4))
-  (me/unboldify '(custom-variable-tag)))
+  )
 #+END_SRC
 
 ** Daemon
@@ -800,8 +752,7 @@ Define words using Wordnik.
 Translage using Google.
 
 #+BEGIN_SRC emacs-lisp
-(use-package google-translate
-  :config (me/unboldify '(google-translate-translation-face)))
+(use-package google-translate)
 #+END_SRC
 
 ** Diff
@@ -818,11 +769,7 @@ Ediff is a visual interface to Unix =diff=.
 
 #+BEGIN_SRC emacs-lisp
 (use-package ediff-init
-  :ensure nil
-  :config
-  (me/unboldify '(ediff-fine-diff-A
-                  ediff-fine-diff-B
-                  ediff-fine-diff-C)))
+  :ensure nil)
 
 (use-package ediff-wind
   :ensure nil
@@ -913,14 +860,12 @@ under the same bind, that is =<C-return>=. Basically it's an expand DWIM.
 (use-package yasnippet
   :bind
   (:map yas-minor-mode-map
-        ("TAB" . nil)
-        ("<tab>" . nil))
+        ("TAB" . yas-expand)
+        ("<tab>" . yas-expand))
   :hook
-  ((emacs-lisp-mode . yas-minor-mode)
-   (html-mode . yas-minor-mode)
-   (js-mode . yas-minor-mode)
-   (org-mode . yas-minor-mode)
-   (python-mode . yas-minor-mode))
+  (
+   (python-mode . yas-minor-mode)
+   (tex-mode . yas-minor-mode))
   :config
   (setq-default yas-snippet-dirs `(,(expand-file-name "snippets/" user-emacs-directory)))
   (yas-reload-all))
@@ -1006,8 +951,7 @@ This is a package to perform text folding like in Vim. It has the following feat
   :config (set-face-attribute 'erc-button nil :inherit 'button))
 
 (use-package erc-match
-  :ensure nil
-  :config (me/unboldify '(erc-current-nick-face)))
+  :ensure nil)
 #+END_SRC
 
 Colorize nicks with unique colors.
@@ -1088,7 +1032,7 @@ leaner, modular, and unchained from constraints of backward compatibility.
                       :height me/font-size-title)
   ;; (zenburn-with-color-variables
   ;;   (set-face-attribute 'helm-prefarg nil :foreground zenburn-magenta))
-  (me/unboldify '(helm-match helm-source-header)))
+  )
 #+END_SRC
 
 Helm sub-modules can be customized separately. Many basic Emacs commands have
@@ -1152,7 +1096,6 @@ their Helm equivalents.
    helm-ff-no-preselect t
    helm-ff-skip-boring-files t
    helm-find-file-ignore-thing-at-point t)
-  (me/unboldify '(helm-ff-directory helm-ff-symlink))
 
   ;; NOTE: See https://github.com/bbatsov/zenburn-emacs/pull/279.
   ;; (zenburn-with-color-variables
@@ -1466,6 +1409,7 @@ variables of interest, then copying them into the Emacs environment.
   :if (memq window-system '(mac ns))
   :defer 1
   :config (exec-path-from-shell-initialize))
+(setq exec-path-from-shell-check-startup-files nil)
 #+END_SRC
 
 ** Parentheses
@@ -1789,15 +1733,10 @@ exists as well).
 
 (use-package em-ls
   :ensure nil
-  :config
-  (me/unboldify '(eshell-ls-directory
-                  eshell-ls-executable
-                  eshell-ls-special
-                  eshell-ls-symlink)))
+  :config)
 
 (use-package em-prompt
-  :ensure nil
-  :config (me/unboldify '(eshell-prompt)))
+  :ensure nil)
 #+END_SRC
 
 Yes, Emacs emulates terminals too.
@@ -1819,47 +1758,6 @@ Yes, Emacs emulates terminals too.
   :init
   (global-undo-tree-mode))
 #+end_src
-** Treemacs
-Directory and files explorer like NERDTree
-
-#+begin_src emacs-lisp
-(use-package treemacs
-    :ensure t
-    :defer t
-    :config
-    (progn
-
-      (setq treemacs-follow-after-init          t
-            treemacs-width                      35
-            treemacs-indentation                2
-            treemacs-git-integration            t
-            treemacs-collapse-dirs              3
-            treemacs-silent-refresh             nil
-            treemacs-change-root-without-asking nil
-            treemacs-sorting                    'alphabetic-desc
-            treemacs-show-hidden-files          t
-            treemacs-never-persist              nil
-            treemacs-is-never-other-window      nil
-            treemacs-goto-tag-strategy          'refetch-index)
-
-      (treemacs-follow-mode t)
-      (treemacs-filewatch-mode t))
-    :bind
-    (:map global-map
-          ([f1]        . treemacs-toggle)
-          ([f2]        . treemacs-projectile-toggle)
-          ("<C-M-tab>" . treemacs-toggle)
-          ("M-0"       . treemacs-select-window)
-          ("C-c 1"     . treemacs-delete-other-windows)
-        ))
-  (use-package treemacs-projectile
-    :defer t
-    :ensure t
-    :config
-    (setq treemacs-header-function #'treemacs-projectile-create-header)
-)
-#+end_src
-
 ** Quality of Life
 
 Auto-indent code as you write.
@@ -2064,10 +1962,7 @@ Git itself deserve to be called porcelains.
   :hook (git-commit-mode . me/git-commit-auto-fill-everywhere)
   :config
   (setq-default git-commit-summary-max-length 50)
-  (me/unboldify '(git-commit-comment-action
-                  git-commit-comment-branch-local
-                  git-commit-comment-branch-remote
-                  git-commit-comment-heading)))
+  )
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -2111,40 +2006,19 @@ Git itself deserve to be called porcelains.
   (set-face-attribute 'magit-diff-file-heading-highlight nil :background nil)
   (set-face-attribute 'magit-diff-hunk-region nil :inherit 'region)
   (set-face-attribute 'magit-section-highlight nil :background nil)
-  (me/unboldify '(magit-branch-current
-                  magit-branch-local
-                  magit-branch-remote
-                  magit-head
-                  magit-refname
-                  magit-refname-stash
-                  magit-refname-wip
-                  magit-tag)))
+  )
 
 (use-package magit-blame
-  :ensure nil
-  :config (me/unboldify '(magit-blame-summary)))
+  :ensure nil)
 
 (use-package magit-diff
-  :ensure nil
-  :config
-  (me/unboldify '(magit-diff-file-heading
-                  magit-diff-file-heading-highlight
-                  magit-diff-file-heading-selection)))
+  :ensure nil)
 
 (use-package magit-popup
-  :ensure nil
-  :config
-  (me/unboldify '(magit-popup-argument
-                  magit-popup-heading
-                  magit-popup-key
-                  magit-popup-option-value)))
+  :ensure nil)
 
 (use-package magit-section
-  :ensure nil
-  :config
-  (me/unboldify '(magit-section-heading
-                  magit-section-heading-selection
-                  magit-section-secondary-heading)))
+  :ensure nil)
 
 (use-package gitattributes-mode :delight gitattributes-mode "Git Attributes")
 (use-package gitconfig-mode :delight gitconfig-mode "Git Config")
@@ -2250,3 +2124,61 @@ Highlight space-like characters, eg. trailing spaces, tabs, empty lines.
 :ensure t
   :hook (company-mode . company-box-mode)) 
 #+end_src
+** Dashboard
+Emacs Dashboard Startup Page
+#+begin_src emacs-lisp
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook))
+#+end_src
+** Treemacs
+Directory and files explorer like NERDTree
+
+#+begin_src emacs-lisp
+(use-package treemacs
+    :ensure t
+    :defer t
+    :config
+    (progn
+
+      (setq treemacs-follow-after-init          t
+            treemacs-width                      35
+            treemacs-indentation                2
+            treemacs-git-integration            t
+            treemacs-collapse-dirs              3
+            treemacs-silent-refresh             nil
+            treemacs-change-root-without-asking nil
+            treemacs-sorting                    'alphabetic-desc
+            treemacs-show-hidden-files          t
+            treemacs-never-persist              nil
+            treemacs-is-never-other-window      nil
+            treemacs-goto-tag-strategy          'refetch-index)
+
+      (treemacs-follow-mode t)
+      (treemacs-filewatch-mode t))
+    :bind
+    (:map global-map
+          ([f1]        . treemacs-toggle)
+          ([f2]        . treemacs-projectile-toggle)
+          ("<C-M-tab>" . treemacs-toggle)
+          ("M-0"       . treemacs-select-window)
+          ("C-c 1"     . treemacs-delete-other-windows)
+        ))
+  (use-package treemacs-projectile
+    :defer t
+    :ensure t
+    :config
+    (setq treemacs-header-function #'treemacs-projectile-create-header)
+)
+#+end_src
+
+#+begin_src emacs-lisp
+
+(use-package neotree
+:config
+(global-set-key [f1] 'neotree-toggle)
+)
+
+#+end_src
+
